@@ -1,0 +1,1698 @@
+{
+  "name": "Customer Project",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "9d03c8ae-f004-47af-8f6a-8a0e6eabb5ac",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1040,
+        -64
+      ],
+      "id": "da71ce89-f98f-448a-a0d9-f0dc6bfb70c1",
+      "name": "Webhook",
+      "webhookId": "9d03c8ae-f004-47af-8f6a-8a0e6eabb5ac"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }}",
+        "options": {
+          "systemMessage": "You are an intelligent Automation Manager.\nAnalyze the user's request and classify it into one of these categories:\n\nDEFINITIONS:\n1. PRODUCT: Buying, Adding, Creating, Updating, or Deleting inventory/products.\n2. ORDER: Creating new Orders or Selling items to customers.\n3. INVOICE: Sending Invoices, Bills, or Emails.\n4. OTHER: Unrelated requests (like \"Hello\").\n\nEXAMPLES:\n\"Add 50 black shirts\" -> PRODUCT\n\"Change price of SKU-123\" -> PRODUCT\n\"Delete product T-Shirt\" -> PRODUCT\n\"Disable inventory\" -> PRODUCT\n\n\"Create order for Ali\" -> ORDER\n\"Sell 2 Jeans to Mr. X\" -> ORDER\n\"New sale of 5 items\" -> ORDER\n\n\"Send invoice to email\" -> INVOICE\n\"Email the bill to customer\" -> INVOICE\n\nYOUR GOAL:\nReply with ONLY ONE WORD: PRODUCT, ORDER, INVOICE, or OTHER.\nDo not write any explanation."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -800,
+        -80
+      ],
+      "id": "0020169f-51d6-4ebf-9b9b-e8adfb6c0fe7",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        160
+      ],
+      "id": "82b41caf-0884-4be8-9f51-15661b344a94",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "sayYhTBDpcNq1IwV",
+          "name": "Groq account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "PRODUCT",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "0f6af158-0eec-4fc4-9cd4-a888e210dbc7"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "469e1eba-518f-4c65-b325-da6ef04dd2bc",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "ORDER",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "2fe370b4-91ed-413b-8ec6-43d9978875e0",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "INVOICE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "682f520b-5d88-4b3b-bf5e-549a15727e71",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "OTHER",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -432,
+        -96
+      ],
+      "id": "872fc6ee-f3f4-4575-87a7-459891f28510",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        -304
+      ],
+      "id": "bd100f18-fe38-4baf-a1b2-b5ec31e17a5b",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "ttgGLbyQJrSBqQhh",
+          "name": "Groq account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the AI text\nconst text = $input.all()[0].json.output || $input.all()[0].json.content;\n\n// Find the first JSON object using Regex (Safe Mode)\nconst match = text.match(/\\{[\\s\\S]*?\\}/);\n\nif (match) {\n    return JSON.parse(match[0]);\n} else {\n    return { error: \"No JSON found\" };\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        -416
+      ],
+      "id": "d01de1c1-396c-4564-b0dc-84d0ed3c332b",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Webhook').item.json.body.message }}",
+        "options": {
+          "systemMessage": "You are a Database Assistant.\nYour job is to extract product details for the Inventory Sheet.\n\nEXTRACT ONLY THESE FIELDS in JSON format:\n1. Name (Product Name)\n2. SKU (Generate a simple SKU if missing, e.g. PROD-001)\n3. Price (Number)\n4. Stock (Quantity)\n5. BatchID (If provided, else null)\n\nRULES:\n- Return ONLY valid JSON.\n- Do not write any introduction or explanation.\n- If a value is missing, use null.\n\nEXAMPLE JSON:\n{\n  \"Name\": \"Black Shirt\",\n  \"SKU\": \"SHIRT-001\",\n  \"Price\": 500,\n  \"Stock\": 50,\n  \"BatchID\": \"B-123\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -80,
+        -528
+      ],
+      "id": "6f44c69a-3f87-40e5-a2cc-061314dc9c73",
+      "name": "Product AI"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        -16
+      ],
+      "id": "e46c0a03-1296-4694-9a0c-7134bc92dac3",
+      "name": "Groq Chat Model2",
+      "credentials": {
+        "groqApi": {
+          "id": "ttgGLbyQJrSBqQhh",
+          "name": "Groq account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $input.all()[0].json.output || $input.all()[0].json.content; const match = text.match(/\\{[\\s\\S]*?\\}/); return match ? JSON.parse(match[0]) : { error: \"No JSON\" };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        432,
+        -112
+      ],
+      "id": "474d7a02-9f3b-4a5a-8f03-a0b049b3d613",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "value": "appv4OAGLgrisGDgM",
+          "mode": "list",
+          "cachedResultName": "Products",
+          "cachedResultUrl": "https://airtable.com/appv4OAGLgrisGDgM"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbla9Hy1Lmo8gPHUv",
+          "mode": "list",
+          "cachedResultName": "Table 1",
+          "cachedResultUrl": "https://airtable.com/appv4OAGLgrisGDgM/tbla9Hy1Lmo8gPHUv"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Stock": "={{ $json.Stock }}",
+            "Price": "={{ $json.Price }}",
+            "Name": "={{ $json.Name }}",
+            "SKU": "={{ $json.SKU }}",
+            "WooID": 0
+          },
+          "matchingColumns": [
+            "SKU"
+          ],
+          "schema": [
+            {
+              "id": "SKU",
+              "displayName": "SKU",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Price",
+              "displayName": "Price",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Stock",
+              "displayName": "Stock",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "BatchID",
+              "displayName": "BatchID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "WooID",
+              "displayName": "WooID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ShopifyIID",
+              "displayName": "ShopifyIID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        608,
+        -384
+      ],
+      "id": "4b96d02e-0d5c-4bfa-9213-19d263ae4ebf",
+      "name": "Product Record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Cq2IkkHsxP7cIiEI",
+          "name": "Airtable Personal Access Token account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        352
+      ],
+      "id": "c3a3b80c-35be-4147-a886-c1c94869abdd",
+      "name": "Groq Chat Model4",
+      "credentials": {
+        "groqApi": {
+          "id": "sayYhTBDpcNq1IwV",
+          "name": "Groq account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Webhook').item.json.body.message }}",
+        "options": {
+          "systemMessage": "You are a data extraction AI. Extract ONLY the customer name from the user's message.\n\nCRITICAL RULES:\n1. Return ONLY valid JSON\n2. NO explanations, NO extra text\n3. Just the JSON object\n\nOutput format:\n{\"customerName\": \"name\"}\n\nExamples:\nInput: \"Bilal ko invoice bhejo\"\nOutput: {\"customerName\": \"Bilal\"}\n\nInput: \"Send invoice to Raza\"\nOutput: {\"customerName\": \"Raza\"}\n\nInput: \"Ali ka invoice send karo\"\nOutput: {\"customerName\": \"Ali\"}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -32,
+        128
+      ],
+      "id": "b818a584-732c-4870-8761-d98d15c8b17b",
+      "name": "Invoice Worker"
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $input.all()[0].json.output || $input.all()[0].json.content;\nconst match = text.match(/\\{[\\s\\S]*?\\}/);\nreturn match ? JSON.parse(match[0]) : { error: \"No JSON\" };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        368,
+        176
+      ],
+      "id": "81ec5f59-b928-422b-832b-0e9ffbd24568",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appZu1BhlEaklIjGn",
+          "mode": "list",
+          "cachedResultName": "Customers",
+          "cachedResultUrl": "https://airtable.com/appZu1BhlEaklIjGn"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblAPRbfzF1BRAM4X",
+          "mode": "list",
+          "cachedResultName": "Table 1",
+          "cachedResultUrl": "https://airtable.com/appZu1BhlEaklIjGn/tblAPRbfzF1BRAM4X"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "=",
+            "Name": "={{ $json.customerName }}",
+            "Phone": "={{ $json.Phone }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        176,
+        1152
+      ],
+      "id": "c690ab1b-80f2-4530-8cb8-a126c8d15a33",
+      "name": "Invoice Record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Cq2IkkHsxP7cIiEI",
+          "name": "Airtable Personal Access Token account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 1,
+        "options": {
+          "sku": "={{ $('Product Record').item.json.fields.SKU }}"
+        }
+      },
+      "type": "n8n-nodes-base.wooCommerce",
+      "typeVersion": 1,
+      "position": [
+        864,
+        -400
+      ],
+      "id": "8d0efe72-c8ee-4b5a-9ff4-fb62c8ea2054",
+      "name": "Store woocommerce",
+      "alwaysOutputData": true,
+      "credentials": {
+        "wooCommerceApi": {
+          "id": "AouIeqqDvTPhNyKu",
+          "name": "WooCommerce account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "product",
+        "operation": "update",
+        "productId": "={{ $json.id }}",
+        "updateFields": {
+          "name": "={{ $('Product Record').item.json.fields.Name }}",
+          "regularPrice": "={{ $('Product Record').item.json.fields.Price.toString() }}",
+          "stockQuantity": "={{ $('Product Record').item.json.fields.Stock }}"
+        },
+        "dimensionsUi": {},
+        "imagesUi": {},
+        "metadataUi": {}
+      },
+      "type": "n8n-nodes-base.wooCommerce",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        -464
+      ],
+      "id": "5f6b4bb7-9520-43ff-8314-a0480f5b5820",
+      "name": "Update existing product",
+      "credentials": {
+        "wooCommerceApi": {
+          "id": "AouIeqqDvTPhNyKu",
+          "name": "WooCommerce account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "product",
+        "operation": "create",
+        "name": "={{ $('Product Record').item.json.fields.Name }}",
+        "additionalFields": {
+          "manageStock": true,
+          "regularPrice": "={{ $('Product Record').item.json.fields.Price.toString() }}",
+          "sku": "={{ $('Product Record').item.json.fields.SKU }}",
+          "status": "publish",
+          "stockQuantity": "={{ $('Product Record').item.json.fields.Stock }}",
+          "type": "simple"
+        },
+        "dimensionsUi": {},
+        "imagesUi": {},
+        "metadataUi": {}
+      },
+      "type": "n8n-nodes-base.wooCommerce",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        -256
+      ],
+      "id": "1bc81251-05c3-4733-97c1-ba663b517c82",
+      "name": "Creat new products",
+      "credentials": {
+        "wooCommerceApi": {
+          "id": "4YGSzU7KtgRRioHq",
+          "name": "WooCommerce account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "1bb84eee-1561-4758-9914-12aa2842ad09",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "0",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1136,
+        -384
+      ],
+      "id": "68051523-67ed-4d02-af84-fac861437de4",
+      "name": "iD base"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appOl5V1c62zBZsmY",
+          "mode": "list",
+          "cachedResultName": "Orders",
+          "cachedResultUrl": "https://airtable.com/appOl5V1c62zBZsmY"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblaAjceeYlM4ssdC",
+          "mode": "list",
+          "cachedResultName": "Orders",
+          "cachedResultUrl": "https://airtable.com/appOl5V1c62zBZsmY/tblaAjceeYlM4ssdC"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ProductSKU": "={{ $node[\"Search records\"].json.SKU }}",
+            "Quantity": "={{ $json.Quantity }}",
+            "CustomerName": "={{ $json.CustomerName }}",
+            "TotalAmount": "={{ $json.TotalAmount }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "OrderID",
+              "displayName": "OrderID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "CustomerName",
+              "displayName": "CustomerName",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ProductSKU",
+              "displayName": "ProductSKU",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Quantity",
+              "displayName": "Quantity",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "TotalAmount",
+              "displayName": "TotalAmount",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Assignee",
+              "displayName": "Assignee",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "income",
+              "displayName": "income",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "From field: ProductSKU",
+              "displayName": "From field: ProductSKU",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "From field: ProductSKU 2",
+              "displayName": "From field: ProductSKU 2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1168,
+        -32
+      ],
+      "id": "2acafac8-cc8d-4c08-8001-893332835a04",
+      "name": "Order crm",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Cq2IkkHsxP7cIiEI",
+          "name": "Airtable Personal Access Token account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Webhook').item.json.body.message }}",
+        "options": {
+          "systemMessage": "You are an Order Manager.\nExtract these details for the Orders Sheet.\nEXTRACT ONLY THESE FIELDS in JSON format:\n1. CustomerName (e.g. Ali)\n2. ProductSKU (e.g. SHIRT-001)\n3. Quantity (Number)\n4. PaymentMethod (COD, Bank Transfer, Paid)\nRULES:\n- Return ONLY valid JSON.\n- If missing, use null.\nEXAMPLE:\n{ \"CustomerName\": \"Ali\", \"ProductSKU\": \"SHIRT-001\", \"Quantity\": 2, \"PaymentMethod\": \"COD\" }"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        96,
+        -208
+      ],
+      "id": "82469d5e-f025-470b-9d35-ce4e72ae1745",
+      "name": "order Data"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appv4OAGLgrisGDgM",
+          "mode": "list",
+          "cachedResultName": "Products",
+          "cachedResultUrl": "https://airtable.com/appv4OAGLgrisGDgM"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbla9Hy1Lmo8gPHUv",
+          "mode": "list",
+          "cachedResultName": "Products",
+          "cachedResultUrl": "https://airtable.com/appv4OAGLgrisGDgM/tbla9Hy1Lmo8gPHUv"
+        },
+        "filterByFormula": "={SKU} = \"{{ $json.ProductSKU }}\"",
+        "returnAll": false,
+        "limit": 1,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        656,
+        -80
+      ],
+      "id": "23648199-1ffd-40c4-a2a2-aee4ba8859ca",
+      "name": "Search records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Cq2IkkHsxP7cIiEI",
+          "name": "Airtable Personal Access Token account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appv4OAGLgrisGDgM",
+          "mode": "list",
+          "cachedResultName": "Products",
+          "cachedResultUrl": "https://airtable.com/appv4OAGLgrisGDgM"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbla9Hy1Lmo8gPHUv",
+          "mode": "list",
+          "cachedResultName": "Products",
+          "cachedResultUrl": "https://airtable.com/appv4OAGLgrisGDgM/tbla9Hy1Lmo8gPHUv"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Stock": "={{ $('Search records').item.json.Stock - $('Total amount nimali').item.json.Quantity }}",
+            "id": "={{ $('Search records').item.json.id }}",
+            "WooID": "={{ $('Search records').item.json.WooID }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "SKU",
+              "displayName": "SKU",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Price",
+              "displayName": "Price",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Stock",
+              "displayName": "Stock",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "BatchID",
+              "displayName": "BatchID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "WooID",
+              "displayName": "WooID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ShopifyIID",
+              "displayName": "ShopifyIID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1392,
+        32
+      ],
+      "id": "ee7e9ca2-1ff0-4034-b642-74f1b490be3f",
+      "name": "Update Product Stock",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Cq2IkkHsxP7cIiEI",
+          "name": "Airtable Personal Access Token account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Order Data from previous Code Node\nconst order = $('Code in JavaScript1').item.json;\n\n// 2. Product Data from Search Node (Input to this node)\nconst product = $input.first().json;\n\n// 3. Safe Numbers (Convert to number to avoid NaN)\n// Agar Price/Stock empty ho to 0 maan lega\nconst price = parseFloat(product.Price) || 0;\nconst stock = parseInt(product.Stock) || 0;\nconst quantity = parseInt(order.Quantity) || 0;\n\n// 4. Calculate Total\nconst totalAmount = price * quantity;\n\n// 5. Return Clean Data for Next Steps\nreturn {\n  json: {\n    // --- Order Details ---\n    CustomerName: order.CustomerName,\n    ProductSKU: order.ProductSKU,\n    Quantity: quantity,\n    PaymentMethod: order.PaymentMethod,\n    \n    // --- Calculated Values ---\n    TotalAmount: totalAmount,\n    \n    // --- Product Details (For Updates) ---\n    ProductID: product.id,       // AirTable Update ke liye\n    ProductStock: stock,         // Stock Calculation ke liye\n    ProductWooID: product.WooID, // WooCommerce Sync ke liye\n    \n    // --- Meta Data ---\n    Date: new Date().toISOString().split('T')[0],\n    Platform: \"CRM (Live Sale)\",\n    InvoiceStatus: \"Pending\"\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        944,
+        -80
+      ],
+      "id": "731a20a7-12a6-486d-83f9-742fe7e823dc",
+      "name": "Total amount nimali"
+    },
+    {
+      "parameters": {
+        "resource": "product",
+        "operation": "update",
+        "productId": "={{ $('Search records').item.json.WooID }}",
+        "updateFields": {
+          "stockQuantity": "={{ $('Update Product Stock').item.json.fields.Stock }}"
+        },
+        "dimensionsUi": {},
+        "imagesUi": {},
+        "metadataUi": {}
+      },
+      "type": "n8n-nodes-base.wooCommerce",
+      "typeVersion": 1,
+      "position": [
+        1664,
+        32
+      ],
+      "id": "2eaedc12-4955-4f83-bf41-412f7eb68393",
+      "name": "Update a product",
+      "credentials": {
+        "wooCommerceApi": {
+          "id": "4YGSzU7KtgRRioHq",
+          "name": "WooCommerce account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appv4OAGLgrisGDgM",
+          "mode": "list",
+          "cachedResultName": "Products",
+          "cachedResultUrl": "https://airtable.com/appv4OAGLgrisGDgM"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbla9Hy1Lmo8gPHUv",
+          "mode": "list",
+          "cachedResultName": "Table 1",
+          "cachedResultUrl": "https://airtable.com/appv4OAGLgrisGDgM/tbla9Hy1Lmo8gPHUv"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Product Record').item.json.id }}",
+            "WooID": "={{ $json.id }}",
+            "Price": "={{ $('Product Record').item.json.fields.Price }}",
+            "Stock": "={{ $('Product Record').item.json.fields.Stock }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "SKU",
+              "displayName": "SKU",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Price",
+              "displayName": "Price",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Stock",
+              "displayName": "Stock",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "BatchID",
+              "displayName": "BatchID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "WooID",
+              "displayName": "WooID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ShopifyIID",
+              "displayName": "ShopifyIID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1696,
+        -288
+      ],
+      "id": "182a2e08-fbb5-4c3f-af58-bea2d5b718bc",
+      "name": "Update record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Cq2IkkHsxP7cIiEI",
+          "name": "Airtable Personal Access Token account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appOl5V1c62zBZsmY",
+          "mode": "list",
+          "cachedResultName": "Orders",
+          "cachedResultUrl": "https://airtable.com/appOl5V1c62zBZsmY"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblaAjceeYlM4ssdC",
+          "mode": "list",
+          "cachedResultName": "Table 1",
+          "cachedResultUrl": "https://airtable.com/appOl5V1c62zBZsmY/tblaAjceeYlM4ssdC"
+        },
+        "filterByFormula": "={CustomerName} = \"{{ $json.customerName }}\"",
+        "options": {},
+        "sort": {
+          "property": [
+            {
+              "field": "OrderID",
+              "direction": "desc"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        656,
+        192
+      ],
+      "id": "a8cc0ab1-3df4-40c0-8db6-dfa80bf72f7a",
+      "name": "Search Orders",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Cq2IkkHsxP7cIiEI",
+          "name": "Airtable Personal Access Token account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appv4OAGLgrisGDgM",
+          "mode": "list",
+          "cachedResultName": "Products",
+          "cachedResultUrl": "https://airtable.com/appv4OAGLgrisGDgM"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbla9Hy1Lmo8gPHUv",
+          "mode": "list",
+          "cachedResultName": "Table 1",
+          "cachedResultUrl": "https://airtable.com/appv4OAGLgrisGDgM/tbla9Hy1Lmo8gPHUv"
+        },
+        "filterByFormula": "={SKU} = \"{{ $node[\"Search Orders\"].json.ProductSKU }}\"",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        944,
+        208
+      ],
+      "id": "fc78e5c0-cd35-4e7a-b2a2-65537906b0d5",
+      "name": "Get Product Details",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Cq2IkkHsxP7cIiEI",
+          "name": "Airtable Personal Access Token account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appZu1BhlEaklIjGn",
+          "mode": "list",
+          "cachedResultName": "Customers",
+          "cachedResultUrl": "https://airtable.com/appZu1BhlEaklIjGn"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblAPRbfzF1BRAM4X",
+          "mode": "list",
+          "cachedResultName": "Table 3",
+          "cachedResultUrl": "https://airtable.com/appZu1BhlEaklIjGn/tblAPRbfzF1BRAM4X"
+        },
+        "filterByFormula": "={Name} = \"{{ $node[\"Search Orders\"].json.CustomerName }}\"",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1248,
+        224
+      ],
+      "id": "037aeadb-0f33-436c-a19f-9f704893f14e",
+      "name": "Get Customer Email",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Cq2IkkHsxP7cIiEI",
+          "name": "Airtable Personal Access Token account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const order = $node[\"Search Orders\"].json;\nconst product = $node[\"Get Product Details\"].json;\nconst customer = $node[\"Get Customer Email\"].json;\n\nconst invoiceHTML = `\n<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial; padding: 40px; background: #f5f5f5; }\n    .invoice { background: white; padding: 40px; max-width: 800px; margin: 0 auto; }\n    .header { text-align: center; border-bottom: 3px solid #667eea; padding-bottom: 20px; margin-bottom: 30px; }\n    .header h1 { color: #667eea; font-size: 36px; }\n    table { width: 100%; border-collapse: collapse; margin: 30px 0; }\n    th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }\n    th { background: #667eea; color: white; }\n    .total { text-align: right; font-size: 20px; font-weight: bold; color: #667eea; margin-top: 20px; }\n  </style>\n</head>\n<body>\n  <div class=\"invoice\">\n    <div class=\"header\">\n      <h1>INVOICE</h1>\n      <p>Order #${order.OrderID}</p>\n    </div>\n    \n    <p><strong>Customer:</strong> ${order.CustomerName}</p>\n    <p><strong>Email:</strong> ${customer.Email}</p>\n    <p><strong>Date:</strong> ${order.Date}</p>\n    \n    <table>\n      <tr>\n        <th>Product</th>\n        <th>SKU</th>\n        <th>Quantity</th>\n        <p><strong>Date:</strong> ${new Date().toISOString().split('T')[0]}</p>\n        <th>Price</th>\n        <th>Total</th>\n      </tr>\n      <tr>\n        <td>${product.Name}</td>\n        <td>${product.SKU}</td>\n        <td>${order.Quantity}</td>\n        <td>PKR ${product.Price}</td>\n        <td>PKR ${order.TotalAmount}</td>\n      </tr>\n    </table>\n    \n    <div class=\"total\">\n      Total: PKR ${order.TotalAmount}\n    </div>\n  </div>\n</body>\n</html>\n`;\n\nreturn [{\n  json: {\n    html: invoiceHTML,\n    orderID: order.OrderID,\n    customerEmail: customer.Email,\n    customerName: order.CustomerName\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        272
+      ],
+      "id": "9c9053a3-69cd-4a45-a0e4-c689b7613c65",
+      "name": "Generate Invoice HTML"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.pdfshift.io/v3/convert/pdf?api_key=sk_5559fb8f1b6146fb051d4825900311f8418cd144",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "source",
+              "value": "={{ $node[\"Generate Invoice HTML\"].json.html }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1776,
+        320
+      ],
+      "id": "386c6eb5-4e46-43a8-a666-e1b1d202fd29",
+      "name": "HTML to PDF"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $node[\"Generate Invoice HTML\"].json.customerEmail }}",
+        "subject": "=Invoice for Order #{{ $node[\"Generate Invoice HTML\"].json.orderID }}",
+        "message": "=<h2>Thank You for Your Order!</h2> <p>Dear {{ $node[\"Generate Invoice HTML\"].json.customerName }},</p> <p>Your invoice is attached.</p> <p><strong>Order ID:</strong> {{ $node[\"Generate Invoice HTML\"].json.orderID }}</p> <p>Best regards,<br>Your Store Team</p>",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2064,
+        352
+      ],
+      "id": "db6aee7e-2596-4d94-926c-2e21f5bbe39d",
+      "name": "Send Email",
+      "webhookId": "1244405b-f77f-4fee-be73-322a80c122c6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Xpn818PGHhnVRGQO",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Product AI",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "order Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Invoice Worker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Product AI",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Product Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Product AI": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "order Data",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Invoice Worker",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Invoice Worker": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Search Orders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Product Record": {
+      "main": [
+        [
+          {
+            "node": "Store woocommerce",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store woocommerce": {
+      "main": [
+        [
+          {
+            "node": "iD base",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "iD base": {
+      "main": [
+        [
+          {
+            "node": "Update existing product",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Creat new products",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Order crm": {
+      "main": [
+        [
+          {
+            "node": "Update Product Stock",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "order Data": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "Total amount nimali",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Total amount nimali": {
+      "main": [
+        [
+          {
+            "node": "Order crm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Product Stock": {
+      "main": [
+        [
+          {
+            "node": "Update a product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Creat new products": {
+      "main": [
+        [
+          {
+            "node": "Update record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Invoice Record": {
+      "main": [
+        []
+      ]
+    },
+    "Search Orders": {
+      "main": [
+        [
+          {
+            "node": "Get Product Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Product Details": {
+      "main": [
+        [
+          {
+            "node": "Get Customer Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Customer Email": {
+      "main": [
+        [
+          {
+            "node": "Generate Invoice HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Invoice HTML": {
+      "main": [
+        [
+          {
+            "node": "HTML to PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML to PDF": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "8d2a7937-7b58-41a7-abcb-0e3fac4208e5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "837c9f4ded1064af5c4b2073acbccc78bd2da355810d777aedeac5f4e2b853b4"
+  },
+  "id": "YvJDii4vwSIH93K6",
+  "tags": []
+}
